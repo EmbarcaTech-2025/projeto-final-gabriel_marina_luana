@@ -321,8 +321,9 @@ void thingspeak_task(void *params)
             float p = have_em ? (float)em.p_instant : 0.0f;
             float e = (float)e10_wh;
             float upsecs = (float)uptime_s();
+            float v_pu = have_em ? (float)em.v_pu : 0.0f;
 
-            thingspeak_send(API_KEY, 5, v, i, p, e, upsecs);
+            thingspeak_send(API_KEY, 6, v, i, p, e, upsecs, v_pu);
 
             reset_e10_wh_acc_s(&e10_wh, &acc_s);
             first_send_done = true;
@@ -337,8 +338,9 @@ void thingspeak_task(void *params)
             float p = have_em ? (float)em.p_instant : 0.0f;
             float e = (float)e10_wh;
             float upsecs = (float)uptime_s();
+            float v_pu = have_em ? (float)em.v_pu : 0.0f;
 
-            thingspeak_send(API_KEY, 5, v, i, p, e, upsecs);
+            thingspeak_send(API_KEY, 6, v, i, p, e, upsecs, v_pu);
 
             reset_e10_wh_acc_s(&e10_wh, &acc_s);
         }

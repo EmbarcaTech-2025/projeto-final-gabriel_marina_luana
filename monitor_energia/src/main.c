@@ -1,11 +1,12 @@
 /**
  * @file main.c
- * @brief Ponto de entrada: cria tasks (Wi‑Fi, EnergyMonitor, ThingSpeak) e inicia o scheduler.
+ * @brief Ponto de entrada: cria tasks e inicia o scheduler.
  * @details
  *  Inicializa subsistemas (stdio/logger/RTC/ADS1115/Wi‑Fi) e agenda as tasks:
  *   - WiFiManagerTask: gerencia conexão e NTP
  *   - EnergyMonitorTask: amostra e calcula RMS/PU/Pinst
  *   - ThingSpeakTask: acumula energia e envia telemetria
+ *   - SDCardLogTask: grava arquivo de log no cartão SD
  */
 
 #include <stdio.h>
@@ -19,6 +20,7 @@
 #include "credentials.h"
 #include "lib/wifi_manager.h"
 #include "lib/thingspeak.h"
+#include "lib/sd_card_log_task.h"
 
 /**
  * @brief Função principal do firmware.
@@ -54,6 +56,14 @@ int main(void)
         thingspeak_task,
         "ThingSpeakTask",
         3072,
+        NULL,
+        tskIDLE_PRIORITY + 1,
+        NULL);
+
+    xTaskCreate(
+        sd_card_log_task,
+        "SDCardLogTask",
+        4096,
         NULL,
         tskIDLE_PRIORITY + 1,
         NULL);
