@@ -323,7 +323,9 @@ void thingspeak_task(void *params)
             float upsecs = (float)uptime_s();
             float v_pu = have_em ? (float)em.v_pu : 0.0f;
 
-            thingspeak_send(API_KEY, 6, v, i, p, e, upsecs, v_pu);
+            uint32_t ov = 0, uv = 0;
+            energy_monitor_get_event_counts(&ov, &uv);
+            thingspeak_send(API_KEY, 8, v, i, p, e, upsecs, v_pu, (double)ov, (double)uv);
 
             reset_e10_wh_acc_s(&e10_wh, &acc_s);
             first_send_done = true;
@@ -340,8 +342,9 @@ void thingspeak_task(void *params)
             float upsecs = (float)uptime_s();
             float v_pu = have_em ? (float)em.v_pu : 0.0f;
 
-            thingspeak_send(API_KEY, 6, v, i, p, e, upsecs, v_pu);
-
+            uint32_t ov = 0, uv = 0;
+            energy_monitor_get_event_counts(&ov, &uv);
+            thingspeak_send(API_KEY, 8, v, i, p, e, upsecs, v_pu, (double)ov, (double)uv);
             reset_e10_wh_acc_s(&e10_wh, &acc_s);
         }
     }

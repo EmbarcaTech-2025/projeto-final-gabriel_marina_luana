@@ -23,5 +23,7 @@ typedef struct
 
 void energy_monitor_task(void *params);
 bool energy_monitor_get_last(energy_monitor_data_t *out);
+void energy_monitor_get_event_counts(uint32_t *overvoltage_count,
+                                     uint32_t *undervoltage_count);
 
 #endif /* ENERGY_MONITOR_H */

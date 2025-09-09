@@ -17,19 +17,19 @@
 
 #define TAG "energy_monitor"
 
-#define NUM_SAMPLES     128U               /**< Número de amostras por canal. */
-#define SAMPLE_RATE_HZ  200U               /**< Taxa de amostragem por canal (Hz). */
-#define CYCLE_PERIOD_MS 1000U              /**< Período da task (ms). */
+#define NUM_SAMPLES 128U      /**< Número de amostras por canal. */
+#define SAMPLE_RATE_HZ 200U   /**< Taxa de amostragem por canal (Hz). */
+#define CYCLE_PERIOD_MS 1000U /**< Período da task (ms). */
 
-#define LSB_4_096V (4.096f / 32768.0f)     /**< Tamanho do LSB na faixa ±4.096V. */
+#define LSB_4_096V (4.096f / 32768.0f) /**< Tamanho do LSB na faixa ±4.096V. */
 
-#define VOLT_DC_OFFSET 1.50f               /**< Offset DC do canal de tensão (V). */
-#define CURR_DC_OFFSET 1.65f               /**< Offset DC do canal de corrente (V). */
+#define VOLT_DC_OFFSET 1.50f /**< Offset DC do canal de tensão (V). */
+#define CURR_DC_OFFSET 1.65f /**< Offset DC do canal de corrente (V). */
 
-#define VOLT_CONV_FACTOR 301.15f           /**< Fator V_adc->V_real. */
-#define CURR_CONV_FACTOR 54.87f            /**< Fator V_adc->I_real (A/V). */
+#define VOLT_CONV_FACTOR 301.15f /**< Fator V_adc->V_real. */
+#define CURR_CONV_FACTOR 54.87f  /**< Fator V_adc->I_real (A/V). */
 
-#define VBASE_RMS 127.00f                  /**< Base de tensão para PU (127 Vrms). */
+#define VBASE_RMS 127.00f /**< Base de tensão para PU (127 Vrms). */
 
 static int16_t buffer_ch0[NUM_SAMPLES];
 static int16_t buffer_ch1[NUM_SAMPLES];
@@ -39,12 +39,16 @@ static uint32_t timestamps_ch1[NUM_SAMPLES];
 static energy_monitor_data_t g_last = {0};
 static volatile bool g_last_valid = false;
 
+/* Contadores acumulativos de eventos PRODIST */
+static volatile uint32_t s_over_cnt = 0;  /* Vpu > 1.10 */
+static volatile uint32_t s_under_cnt = 0; /* Vpu < 0.90 *
+
 /**
- * @brief Obtém a última medição calculada pela task.
- * @param[out] out Estrutura preenchida com os últimos valores.
- * @return true se havia dados válidos; false caso contrário.
- * @note Acesso protegido por seção crítica para consistência.
- */
+* @brief Obtém a última medição calculada pela task.
+* @param[out] out Estrutura preenchida com os últimos valores.
+* @return true se havia dados válidos; false caso contrário.
+* @note Acesso protegido por seção crítica para consistência.
+*/
 bool energy_monitor_get_last(energy_monitor_data_t *out)
 {
     if (!out || !g_last_valid)
@@ -137,7 +141,25 @@ void energy_monitor_task(void *params)
         g_last_valid = true;
         taskEXIT_CRITICAL();
 
+        if (v_pu > 1.10)
+        {
+            s_over_cnt++; // sobretensão nesta janela
+        }
+        if (v_pu < 0.90)
+        {
+            s_under_cnt++; // subtensão nesta janela
+        }
+
         LOG(TAG, "V=%.2f V (PU=%.3f) | I=%.3f A | Pinst=%.1f W | t=%u ms",
             vrms_real, v_pu, irms_real, p_instant, t_ms);
     }
+}
+
+void energy_monitor_get_event_counts(uint32_t *overvoltage_count,
+                                     uint32_t *undervoltage_count)
+{
+    taskENTER_CRITICAL();
+    if (overvoltage_count)  *overvoltage_count  = s_over_cnt;
+    if (undervoltage_count) *undervoltage_count = s_under_cnt;
+    taskEXIT_CRITICAL();
 }
