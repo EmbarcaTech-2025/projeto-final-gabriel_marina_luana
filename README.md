@@ -16,6 +16,7 @@ A aplicação é organizada em **tarefas FreeRTOS** e **bibliotecas modulares** 
 
 ## 🗂️ Sumário
 
+- [Entregáveis](#-entregaveis)
 - [Recursos](#-recursos)
 - [Arquitetura](#-arquitetura)
 - [Hardware](#-hardware)
@@ -29,6 +30,17 @@ A aplicação é organizada em **tarefas FreeRTOS** e **bibliotecas modulares** 
 - [ThingSpeak](#-thingspeak)
 - [Dicas de Calibração](#-dicas-de-calibração)
 - [Licença](#-licença)
+
+---
+
+## 📧 Entregáveis
+
+| Projeto | Descrição |
+|---------|-----------|
+| [Etapa 1](./Etapa%201/) | Definição de Requisitos e Lista de Materiais |
+| [Etapa 2](./Etapa%202/) | Arquitetura e Modelagem |
+| [Etapa 3](./Etapa%203/) | Prototipagem e Ajustes |
+| [Etapa 4](./Etapa%204/) | Entrega do Projeto Final |
 
 ---
 
@@ -65,6 +77,10 @@ A aplicação é organizada em **tarefas FreeRTOS** e **bibliotecas modulares** 
 - `thingspeak.*` (construção de payload HTTP e envio TCP).
 - `logger.*`, `sd_card.*`, `sd_card_log_task.*` e `hw_config.*`.
 
+**Fluxograma:**
+
+<img src="https://github.com/EmbarcaTech-2025/projeto-final-gabriel_marina_luana/blob/main/figuras/fluxograma.jpg" width=100% height=100%>
+
 ---
 
 ## 🔌 Hardware
@@ -78,11 +94,15 @@ A aplicação é organizada em **tarefas FreeRTOS** e **bibliotecas modulares** 
   - **MOSI → GPIO 19**
   - **SCK  → GPIO 18**
   - **CS   → GPIO 17**
-  - **CD   → GPIO 13** (detecção de cartão, opcional)
 
 > **Calibração elétrica (valores de exemplo):**  
 > `VOLT_CONV_FACTOR = 301.15` (Vadc→Vreal) e `CURR_CONV_FACTOR = 54.87` (V/V→A).  
 > Ajuste conforme seu divisor, shunt/TC e ganhos do ADS1115.
+
+
+**Esquema:**
+
+<img src="https://github.com/EmbarcaTech-2025/projeto-final-gabriel_marina_luana/blob/main/figuras/esquema.jpg" width=100% height=100%>
 
 ---
 
